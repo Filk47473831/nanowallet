@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+	<link href="css/style.css" rel="stylesheet">
+    <title>Nano Wallet</title>
+  </head>
+  
+  <body>
+  
+	<div class="container mt-5">
+		<h1>Nano Wallet</h1>
+		<label for="rpc">Node RPC IP</label>
+		<input class="form-control form-control-lg" id="rpc" type="text" value="77.68.116.223">
+		<label for="seed">Seed</label>
+		<input class="form-control form-control-lg" id="seed" type="password" value="0000000000000000000000000000000000000000000000000000000000000000">
+		<label for="source">Source Address</label>
+		<select class="form-control form-control-lg" id="source"></select>
+		<label for="balance">Current Balance</label>
+		<input disabled class="form-control form-control-lg" id="balance" type="text" placeholder="0">
+		<label for="destination">Destination Address</label>
+		<input class="form-control form-control-lg" id="destination" type="text" placeholder="nano_1recipientnanoaddress4444444444444444444444444444444tpms1f9r">
+		<label for="amount">Amount</label>
+		<input class="form-control form-control-lg" id="amount" type="text" placeholder="0.01">
+		<button class="btn btn-lg btn-primary form-control form-control-lg mt-3" id="send">Send</button>
+		<button class="btn btn-lg btn-danger form-control form-control-lg mt-3" id="remove">Remove Account</button>
+		<button class="btn btn-lg btn-success form-control form-control-lg mt-3" id="add">Add Account</button>
+		<p class="mt-3" id="response"></p>
+	</div>
+	
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.3.2/math.js" integrity="sha512-Imer9iTeuCPbyZUYNTKsBWsAk3m7n1vOgPsAmw4OlkGSS9qK3/WlJZg7wC/9kL7nUUOyb06AYS8DyYQV7ELEbg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="js/script.js"></script>
+  </body>
+  
+</html>
