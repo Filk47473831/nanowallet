@@ -17,11 +17,11 @@ $(document).ready(function () {
 			return math.format(num, {notation: 'fixed'})
 		}
 		
-		function disableForm() {
+		function disableForm(rpc) {
 			send.setAttribute("disabled","disabled")
 			remove.setAttribute("disabled","disabled")
 			add.setAttribute("disabled","disabled")
-			rpc.setAttribute("disabled","disabled")
+			if(rpc == false) { rpc.setAttribute("disabled","disabled") }
 			seed.setAttribute("disabled","disabled")
 			source.setAttribute("disabled","disabled")
 			destination.setAttribute("disabled","disabled")
@@ -30,7 +30,7 @@ $(document).ready(function () {
 		
 		function enableForm() {
 			send.removeAttribute("disabled")
-			rpc.removeAttribute("disabled")
+			if(rpc == false) { rpc.removeAttribute("disabled") }
 			seed.removeAttribute("disabled")
 			remove.removeAttribute("disabled")
 			add.removeAttribute("disabled")
@@ -72,7 +72,6 @@ $(document).ready(function () {
 		  .done(function(data) {
 		  
 			 seed.value = "0000000000000000000000000000000000000000000000000000000000000000"
-		  
 			 data = JSON.parse(data)
 			 
 		$.ajax({
@@ -104,6 +103,11 @@ $(document).ready(function () {
 		  })
 		}
 		
+		function maxAmount() {
+			if(balance.value > 0) {
+				amount.value = balance.value
+			}
+		}
 		
 
 		$.ajax({
@@ -266,9 +270,30 @@ $(document).ready(function () {
 		  })
 		})
 		
+		$('body').on('click', '#amountMax', maxAmount)
+		
+		
 		$('body').on('change', '#seed', changeSeed)
 		
 		
 		$('body').on('keyup', '#seed', changeSeed)
+		
+		
+		$('body').on('change', '#rpc', function(){
+			if(rpc.value == "") {
+				disableForm(true)
+			} else {
+				enableForm(true)
+			}
+		})
+		
+		
+		$('body').on('keyup', '#rpc', function(){
+			if(rpc.value == "") {
+				disableForm(true)
+			} else {
+				enableForm(true)
+			}
+		})
 				
 	})
