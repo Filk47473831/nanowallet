@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	
+		
 		var rpc = document.getElementById("rpc"),
 			seed = document.getElementById("seed"),
 			source = document.getElementById("source"),
@@ -10,7 +10,10 @@ $(document).ready(function () {
 			remove = document.getElementById("remove"),
 			add = document.getElementById("add"),
 			response = document.getElementById("response"),
-			options = ""
+			options = "",
+			amountMax = document.getElementById("amountMax"),
+			paste = document.getElementById("paste"),
+			copy = document.getElementById("copy")
 		
 		
 		function toPlainString(num) {
@@ -26,6 +29,12 @@ $(document).ready(function () {
 			source.setAttribute("disabled","disabled")
 			destination.setAttribute("disabled","disabled")
 			amount.setAttribute("disabled","disabled")
+			paste.classList.remove("formBtn")
+			paste.disabled = true
+			copy.classList.remove("formBtn")
+			copy.disabled = true
+			amountMax.classList.remove("formBtn")
+			amountMax.disabled = true
 		}
 		
 		function enableForm() {
@@ -37,6 +46,12 @@ $(document).ready(function () {
 			source.removeAttribute("disabled")
 			destination.removeAttribute("disabled")
 			amount.removeAttribute("disabled")
+			paste.classList.add("formBtn")
+			paste.disabled = false
+			copy.classList.add("formBtn")
+			copy.disabled = false
+			amountMax.classList.add("formBtn")
+			amountMax.disabled = false
 		}
 		
 		function listAccounts() {
@@ -268,6 +283,30 @@ $(document).ready(function () {
 			 data = JSON.parse(data)
 			 balance.value = getAccountBalance(data)
 		  })
+		})
+		
+		
+		
+	
+		$('body').on('click', '#copy', function() {
+			navigator.clipboard.writeText(source.value)
+			  .then(() => {
+				// Success!
+			  })
+			  .catch(err => {
+				// Error!
+			  })
+		})
+		
+		
+		$('body').on('click', '#paste', function() {
+			navigator.clipboard.readText()
+			  .then(text => {
+				destination.value = text
+			  })
+			  .catch(err => {
+				// Error!
+			  })
 		})
 		
 		$('body').on('click', '#amountMax', maxAmount)
