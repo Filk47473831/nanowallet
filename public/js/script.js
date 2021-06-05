@@ -9,22 +9,26 @@ $(document).ready(function () {
 			send = document.getElementById("send"),
 			remove = document.getElementById("remove"),
 			add = document.getElementById("add"),
+			accountInfo = document.getElementById("accountInfo"),
 			response = document.getElementById("response"),
 			options = "",
 			amountMax = document.getElementById("amountMax"),
 			paste = document.getElementById("paste"),
-			copy = document.getElementById("copy")
+			copy = document.getElementById("copy"),
+			frontier = "",
+			representative = ""
 		
 		
 		function toPlainString(num) {
 			return math.format(num, {notation: 'fixed'})
 		}
 		
-		function disableForm(rpc) {
+		function disableForm(allFields) {
 			send.setAttribute("disabled","disabled")
 			remove.setAttribute("disabled","disabled")
 			add.setAttribute("disabled","disabled")
-			if(rpc == false) { rpc.setAttribute("disabled","disabled") }
+			accountInfo.setAttribute("disabled","disabled")
+			if(allFields != true) { rpc.setAttribute("disabled","disabled") }
 			seed.setAttribute("disabled","disabled")
 			source.setAttribute("disabled","disabled")
 			destination.setAttribute("disabled","disabled")
@@ -37,12 +41,14 @@ $(document).ready(function () {
 			amountMax.disabled = true
 		}
 		
-		function enableForm() {
+		function enableForm(allFields) {
+			console.log
 			send.removeAttribute("disabled")
-			if(rpc == false) { rpc.removeAttribute("disabled") }
+			if(allFields != true) { rpc.removeAttribute("disabled") }
 			seed.removeAttribute("disabled")
 			remove.removeAttribute("disabled")
 			add.removeAttribute("disabled")
+			accountInfo.removeAttribute("disabled")
 			source.removeAttribute("disabled")
 			destination.removeAttribute("disabled")
 			amount.removeAttribute("disabled")
@@ -82,7 +88,8 @@ $(document).ready(function () {
 		function changeSeed() {
 		  
 		 $.ajax({
-		 url: "/seed?seed=" + seed.value + "&rpc=" + rpc.value
+		 url: "/seed?seed=" + seed.value + "&rpc=" + rpc.value,
+		 timeout: 5000
 		  })
 		  .done(function(data) {
 		  
@@ -90,7 +97,8 @@ $(document).ready(function () {
 			 data = JSON.parse(data)
 			 
 		$.ajax({
-		 url: "/list?" + "rpc=" + rpc.value
+		 url: "/list?" + "rpc=" + rpc.value,
+		 timeout: 5000
 		  })
 		  .done(function(data) {
 		  
@@ -111,8 +119,12 @@ $(document).ready(function () {
 			  
 				 data = JSON.parse(data)
 				 balance.value = getAccountBalance(data)
-			  })
+			  }).catch(function(error) {
+			// Error 
+		  })
 			 
+		  }).catch(function(error) {
+			// Error 
 		  })
 
 		  })
@@ -126,7 +138,8 @@ $(document).ready(function () {
 		
 
 		$.ajax({
-		 url: "/list?" + "rpc=" + rpc.value
+		 url: "/list?" + "rpc=" + rpc.value,
+		 timeout: 5000
 		  })
 		  .done(function(data) {
 		  
@@ -140,15 +153,20 @@ $(document).ready(function () {
 			listAccounts()
 		
 			$.ajax({
-			 url: "/balance?account=" + source.value + "&rpc=" + rpc.value
+			 url: "/balance?account=" + source.value + "&rpc=" + rpc.value,
+			 timeout: 5000
 			  })
 			  .done(function(data) {
 			  
 				 data = JSON.parse(data)
 				 balance.value = getAccountBalance(data)
 
-			  })
+			  }).catch(function(error) {
+			// Error 
+		  })
 			 
+		  }).catch(function(error) {
+			// Error   
 		  })
 
 
@@ -161,7 +179,8 @@ $(document).ready(function () {
 		disableForm()
 
 		$.ajax({
-		 url: "/send?source=" + source.value + "&destination=" + destination.value + "&amount=" + amountValue + "&rpc=" + rpc.value
+		 url: "/send?source=" + source.value + "&destination=" + destination.value + "&amount=" + amountValue + "&rpc=" + rpc.value,
+		 timeout: 5000
 		  })
 		  .done(function(data) {
 			  setTimeout(function(){
@@ -181,6 +200,10 @@ $(document).ready(function () {
 				  })
 				 
 			  },1500)
+		  }).catch(function(error) {
+			response.innerHTML = "Response: " + error.statusText
+			send.innerHTML = 'Send'
+			enableForm()  
 		  })
 		})
 		
@@ -191,7 +214,8 @@ $(document).ready(function () {
 		disableForm()
 
 		$.ajax({
-		 url: "/remove?account=" + source.value + "&rpc=" + rpc.value
+		 url: "/remove?account=" + source.value + "&rpc=" + rpc.value,
+		 timeout: 5000
 		  })
 		  .done(function(data) {
 			  setTimeout(function(){
@@ -200,7 +224,8 @@ $(document).ready(function () {
 				enableForm()
 				
 				$.ajax({
-				 url: "/list?" + "rpc=" + rpc.value
+				 url: "/list?" + "rpc=" + rpc.value,
+				 timeout: 5000
 				  })
 				  .done(function(data) {
 				  
@@ -222,9 +247,15 @@ $(document).ready(function () {
 					 balance.value = getAccountBalance(data)
 				  })
 					 
-				  })
+				  }).catch(function(error) {
+			// Error 
+		  })
 				  
 			  },1500)
+		  }).catch(function(error) {
+			response.innerHTML = "Response: " + error.statusText
+			remove.innerHTML = 'Remove Account'
+			enableForm()  
 		  })
 		})
 		
@@ -235,7 +266,8 @@ $(document).ready(function () {
 		disableForm()
 
 		$.ajax({
-		 url: "/create?" + "rpc=" + rpc.value
+		 url: "/create?" + "rpc=" + rpc.value,
+		 timeout: 5000
 		  })
 		  .done(function(data) {
 			  setTimeout(function(){
@@ -258,17 +290,52 @@ $(document).ready(function () {
 					listAccounts()
 					
 					$.ajax({
-					 url: "/balance?account=" + source.value + "&rpc=" + rpc.value
+					 url: "/balance?account=" + source.value + "&rpc=" + rpc.value,
+					 timeout: 5000
 					  })
 					  .done(function(data) {
 					  
 						 data = JSON.parse(data)
 						 balance.value = getAccountBalance(data)
-					  })
+					  }).catch(function(error) {
+			// Error
+		  })
 					 
-				  })
+				  }).catch(function(error) {
+			// Error  
+		  })
 				  
 			  },1500)
+		  }).catch(function(error) {
+			response.innerHTML = "Response: " + error.statusText
+			add.innerHTML = 'Add Account'
+			enableForm() 
+		  })
+		})
+		
+		
+		$("#accountInfo").on("click", function () {
+						
+		accountInfo.innerHTML = '<div class="spinner-grow text-dark" role="status"><span class="sr-only"></span></div>'
+		disableForm()
+
+		$.ajax({
+		 url: "/accountinfo?account=" + source.value + "&rpc=" + rpc.value,
+		 timeout: 5000
+		  })
+		  .done(function(data) {
+			  setTimeout(function(){
+				frontier = JSON.parse(data).frontier
+				representative = JSON.parse(data).representative
+				response.innerHTML = "Response: " + data
+				accountInfo.innerHTML = 'Account Info'
+				enableForm()
+								  
+			  },1500)
+		  }).catch(function(error) {
+			response.innerHTML = "Response: " + error.statusText
+			accountInfo.innerHTML = 'Account Info'
+			enableForm()
 		  })
 		})
 		
@@ -276,12 +343,14 @@ $(document).ready(function () {
 		$('body').on('change', '#source', function() {
 		  
 		 $.ajax({
-		 url: "/balance?account=" + source.value + "&rpc=" + rpc.value
+		 url: "/balance?account=" + source.value + "&rpc=" + rpc.value,
+		 timeout: 5000
 		  })
 		  .done(function(data) {
-		  
 			 data = JSON.parse(data)
 			 balance.value = getAccountBalance(data)
+		  }).catch(function(error) {
+			// Error
 		  })
 		})
 		
@@ -291,10 +360,10 @@ $(document).ready(function () {
 		$('body').on('click', '#copy', function() {
 			navigator.clipboard.writeText(source.value)
 			  .then(() => {
-				// Success!
+				// Success
 			  })
-			  .catch(err => {
-				// Error!
+			  .catch(function(error) {
+				// Error
 			  })
 		})
 		
@@ -304,8 +373,8 @@ $(document).ready(function () {
 			  .then(text => {
 				destination.value = text
 			  })
-			  .catch(err => {
-				// Error!
+			  .catch(function(error) {
+				// Error
 			  })
 		})
 		
