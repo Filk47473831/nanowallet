@@ -21,6 +21,43 @@ console.log("Running at http://localhost/")
 
 
 
+// Nano functions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				
+function NanoBlock (account, previous, representative, balance, link, work) {
+	this.account = account
+	this.previous = previous
+	this.representative = representative
+	this.balance = balance
+	this.link = link
+	this.work = work
+}
+
+async function deriveSecretKey(seed) {
+	return await nano.deriveSecretKey(seed)
+}
+
+async function hashBlock(nanoBlock) {
+	return await nano.hashBlock(nanoBlock)
+}
+
+async function signBlock(blockHash, secretKey) {
+	var params = { "hash": blockHash, "secretKey": secretKey }
+	return await nano.signBlock(params)
+}
+
+async function computeWork(blockHash, workParams) {
+	return await nano.computeWork(blockHash, workParams)
+}
+
+async function createBlock(secretKey, nanoBlock) {
+	return await nano.createBlock(secretKey, nanoBlock)
+}
+
+
 // User Triggered Actions (via URL)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,25 +248,34 @@ request(options, callback)
 })
 
 
-app.get('/blockcreate', function(req, res) {
-    if(req.query.account) {  
- 
-var dataString = `{
-				  "action": "process",
-				  "json_block": "true",
-				  "subtype": "send",
-				  "block": {
-					"type": "state",
-					"account": "${req.query.account}",
-					"previous": "6CDDA48608C7843A0AC1122BDD46D9E20E21190986B19EAC23E7F33F2E6A6766",
-					"representative": "${req.query.representative}",
-					"balance": "40200000001000000000000000000000000",
-					"link": "87434F8041869A01C8F6F263B87972D7BA443A72E0A97D7A3FD0CCC2358FD6F9",
-					"link_as_account": "nano_33t5by1653nt196hfwm5q3wq7oxtaix97r7bhox5zn8eratrzoqsny49ftsd",
-					"signature": "A5DB164F6B81648F914E49CAB533900C389FAAD64FBB24F6902F9261312B29F730D07E9BCCD21D918301419B4E05B181637CF8419ED4DCBF8EF2539EB2467F07",
-					"work": "000bc55b014e807d"
-				  }
-				}`
+app.get('/blockcreate', async function(req, res) {
+    if(req.query.account) {
+		
+	workParams = { "workerIndex": 0, "workerCount": 1, "workThreshold": "fffffff800000000" }
+	
+	console.log(req.query.frontier)
+	
+	req.query.work = await computeWork(req.query.frontier,workParams)
+	
+	console.log(req.query.seed)
+					
+	var createdBlock = new NanoBlock(req.query.account,req.query.frontier,req.query.representative,req.query.newBalance,req.query.destination,req.query.work)
+
+	secretKey = await deriveSecretKey(req.query.seed)
+
+	var nanoBlock = await createBlock(secretKey,createdBlock)
+
+	nanoBlock = JSON.stringify(nanoBlock.block)
+
+	var dataString = `{
+					  "action": "process",
+					  "json_block": "true",
+					  "subtype": "send",
+					  "block": ${nanoBlock}
+					}`
+					
+	console.log(dataString)
+
 
 var options = {
     url: `http://${req.query.rpc}:7076`,

@@ -10,13 +10,15 @@ $(document).ready(function () {
 			remove = document.getElementById("remove"),
 			add = document.getElementById("add"),
 			accountInfo = document.getElementById("accountInfo"),
+			blockCreate = document.getElementById("blockCreate"),
 			response = document.getElementById("response"),
 			options = "",
 			amountMax = document.getElementById("amountMax"),
 			paste = document.getElementById("paste"),
 			copy = document.getElementById("copy"),
 			frontier = "",
-			representative = ""
+			representative = "",
+			accountBalance = ""
 		
 		
 		function toPlainString(num) {
@@ -28,6 +30,7 @@ $(document).ready(function () {
 			remove.setAttribute("disabled","disabled")
 			add.setAttribute("disabled","disabled")
 			accountInfo.setAttribute("disabled","disabled")
+			blockCreate.setAttribute("disabled","disabled")
 			if(allFields != true) { rpc.setAttribute("disabled","disabled") }
 			seed.setAttribute("disabled","disabled")
 			source.setAttribute("disabled","disabled")
@@ -49,6 +52,7 @@ $(document).ready(function () {
 			remove.removeAttribute("disabled")
 			add.removeAttribute("disabled")
 			accountInfo.removeAttribute("disabled")
+			blockCreate.removeAttribute("disabled")
 			source.removeAttribute("disabled")
 			destination.removeAttribute("disabled")
 			amount.removeAttribute("disabled")
@@ -68,6 +72,8 @@ $(document).ready(function () {
 				source.setAttribute("disabled","disabled")
 				destination.setAttribute("disabled","disabled")
 				amount.setAttribute("disabled","disabled")
+				accountInfo.setAttribute("disabled","disabled")
+				blockCreate.setAttribute("disabled","disabled")
 			} else {
 				source.innerHTML = options
 				send.removeAttribute("disabled")
@@ -75,6 +81,8 @@ $(document).ready(function () {
 				source.removeAttribute("disabled")
 				destination.removeAttribute("disabled")
 				amount.removeAttribute("disabled")
+				accountInfo.removeAttribute("disabled")
+				blockCreate.removeAttribute("disabled")
 			}
 		}
 		
@@ -93,7 +101,6 @@ $(document).ready(function () {
 		  })
 		  .done(function(data) {
 		  
-			 seed.value = "0000000000000000000000000000000000000000000000000000000000000000"
 			 data = JSON.parse(data)
 			 
 		$.ajax({
@@ -327,6 +334,8 @@ $(document).ready(function () {
 			  setTimeout(function(){
 				frontier = JSON.parse(data).frontier
 				representative = JSON.parse(data).representative
+				accountBalance = JSON.parse(data).balance
+				
 				response.innerHTML = "Response: " + data
 				accountInfo.innerHTML = 'Account Info'
 				enableForm()
@@ -335,6 +344,38 @@ $(document).ready(function () {
 		  }).catch(function(error) {
 			response.innerHTML = "Response: " + error.statusText
 			accountInfo.innerHTML = 'Account Info'
+			enableForm()
+		  })
+		})
+		
+		$("#blockCreate").on("click", function () {
+						
+		blockCreate.innerHTML = '<div class="spinner-grow text-dark" role="status"><span class="sr-only"></span></div>'
+		disableForm()
+		
+		var amountValue = amount.value * 1000000000000000000000000000000
+		amountValue = amountValue.toLocaleString('fullwide', {useGrouping:false})
+		
+		var currentBalance = balance.value * 1000000000000000000000000000000
+		currentBalance = currentBalance.toLocaleString('fullwide', {useGrouping:false})
+				
+		var newBalance = math.subtract(currentBalance, amountValue)
+		newBalance = newBalance.toLocaleString('fullwide', {useGrouping:false})
+		
+		 $.ajax({
+		 url: "/blockcreate?account=" + source.value + "&frontier=" + frontier + "&representative=" + representative + "&newBalance=" + newBalance + "&destination=" + destination.value + "&seed=" + seed.value + "&rpc=" + rpc.value,
+		 timeout: 60000
+		  })
+		  .done(function(data) {
+			  setTimeout(function(){			
+				response.innerHTML = "Response: " + data
+				blockCreate.innerHTML = 'Block Create'
+				enableForm()
+								  
+			  },1500)
+		  }).catch(function(error) {
+			response.innerHTML = "Response: " + error.statusText
+			blockCreate.innerHTML = 'Block Create'
 			enableForm()
 		  })
 		})
